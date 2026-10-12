@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Language Interpreter · Real-Time ASL to Text & Voice</title>
+  <meta name="description" content="Real-time American Sign Language recognition into live captions and spoken voice using computer vision.">
+
+  <!-- Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- MediaPipe Standalone Web Bundles -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Clean Monochromatic Styling -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="neutral-theme">
+  <div class="app-layout">
+    <!-- Clean Minimalist Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="brand-title">Sign Language Interpreter</h1>
+      </div>
+
+      <div class="header-right">
+        <button id="btnDictionary" class="btn btn-secondary">
+          ASL Reference
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-container">
+      <div id="viewportContainer" class="viewport-card">
+        <!-- Video Screen -->
+        <div class="video-wrapper">
+          <video id="webcam" playsinline muted autoplay></video>
+          <canvas id="hudCanvas"></canvas>
+
+          <!-- Top-Left Performance Metrics HUD -->
+          <div id="statsBadge" class="stats-badge">
+            <span class="stats-dot"></span>
+            <span id="fpsText">30 FPS</span>
+            <span class="stats-sep">·</span>
+            <span id="latencyText">12ms</span>
+          </div>
+
+          <!-- Top-Center Detected Gesture Badge -->
+          <div id="lastDetectedBadge" class="detected-badge">
+            Detecting...
+          </div>
+
+          <!-- Top-Right Fullscreen Quick Button -->
+          <button id="btnOverlayFullscreen" class="overlay-fullscreen-btn" title="Toggle Fullscreen">
+            ⛶
+          </button>
+
+          <!-- Video Off Overlay -->
+          <div id="videoOffOverlay" class="video-off-overlay">
+            <p class="video-off-title">Camera is turned off</p>
+            <p class="video-off-subtitle">Click below to resume hand tracking</p>
+            <button id="btnResumeVideo" class="btn btn-primary" style="margin-top: 0.75rem;">
+              Turn Camera On
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Closed Caption Subtitle Bar -->
+        <div class="caption-container">
+          <div class="caption-header">
+            <span class="caption-tag">LIVE CAPTIONS</span>
+            <!-- Gboard Style Predictive Word Suggestion Bar -->
+            <div id="predictiveBar" class="predictive-bar"></div>
+            <span class="caption-instructions">Hold steady · Flat palm auto-completes word / space · Swipe left to delete</span>
+          </div>
+          <div class="caption-box">
+            <span class="caption-text-wrapper">
+              <span id="captionText" class="caption-text"></span>
+              <span class="blinking-cursor"></span>
+              <span id="placeholderText" class="placeholder-caption">Show a hand gesture to the camera to begin...</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Clean Action Toolbar -->
+        <div class="action-bar">
+          <div class="action-left">
+            <button id="btnSpeak" class="btn btn-primary" title="Speak sentence aloud (Enter)">
+              🔊 Speak Sentence
+            </button>
+            <button id="btnBackspace" class="btn btn-secondary" title="Delete previous character (Backspace)">
+              ⌫ Backspace
+            </button>
+            <button id="btnClear" class="btn btn-secondary" title="Clear current caption text">
+              Clear
+            </button>
+          </div>
+
+          <div class="action-right">
+            <!-- Voice Accent & Speaker Selector -->
+            <div class="voice-picker-container" title="Choose Voice Accent & Speaker">
+              <span class="voice-icon">🎙️</span>
+              <select id="voiceSelect" class="voice-select" title="Choose Voice & Accent">
+                <option value="">Loading voices...</option>
+              </select>
+            </div>
+
+            <button id="btnToggleVideo" class="btn btn-secondary" title="Turn webcam on or off">
+              📹 Camera On
+            </button>
+            <button id="btnMute" class="btn btn-secondary" title="Toggle voice audio output">
+              🔊 Voice On
+            </button>
+            <button id="btnFullscreen" class="btn btn-secondary" title="Expand to fullscreen">
+              ⛶ Fullscreen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clean Spoken Conversation History -->
+      <section class="transcript-section">
+        <div class="transcript-header">
+          <h2 class="transcript-title">Spoken Transcript History</h2>
+          <button id="btnClearHistory" class="btn-link">Clear History</button>
+        </div>
+        <div id="historyList" class="history-list">
+          <div class="empty-state">
+            Spoken sentences will be recorded here for reference.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ASL Reference Guide Modal -->
+  <div id="dictionaryModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">ASL Gesture Reference Guide</h2>
+          <p class="modal-subtitle">Curated high-accuracy conversational signs & controls with live instructions</p>
+        </div>
+        <button id="btnCloseDictionary" class="modal-close-btn">&times;</button>
+      </div>
+
+      <!-- Reference Filter & Search Toolbar -->
+      <div class="modal-toolbar">
+        <div id="dictCategoryFilters" class="dict-category-filters">
+          <button class="dict-filter-btn active" data-category="all">All Signs</button>
+          <button class="dict-filter-btn" data-category="Conversational">Conversational</button>
+          <button class="dict-filter-btn" data-category="Controls">Controls</button>
+        </div>
+        <input type="text" id="dictSearchInput" class="dict-search-input" placeholder="Search signs or instructions (e.g. 'water', 'hello', 'sorry')...">
+      </div>
+
+      <div class="modal-body">
+        <div id="dictionaryGrid" class="dictionary-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
