@@ -8,7 +8,7 @@ export const COMMON_VOCABULARY = [
   'HELLO', 'HELP', 'HOW', 'HAVE', 'HERE', 'HEAR', 'HOME', 'HAPPY', 'HARD',
   'THANK', 'THANKS', 'TIME', 'THAT', 'THIS', 'THE', 'THEY', 'THERE', 'TODAY', 'TALK',
   'YES', 'YOU', 'YOUR', 'YEAR',
-  'NO', 'NAME', 'NEED', 'NICE', 'NOT', 'NOW', 'NEW',
+  'NO', 'NAME', 'NAMASTE', 'NEED', 'NICE', 'NOT', 'NOW', 'NEW',
   'PLEASE', 'PEOPLE', 'PEACE', 'PROBLEM', 'PLAY',
   'WHAT', 'WHEN', 'WHERE', 'WHY', 'WHO', 'WHICH', 'WATER', 'WANT', 'WELCOME', 'WORK', 'WITH',
   'GOOD', 'GREAT', 'GO', 'GIRL', 'GIVE',

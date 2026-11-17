@@ -257,7 +257,7 @@ export class SentenceBuilder {
       'HELLO': 'Hello!',
       'THANK YOU': 'Thank you!',
       'I LOVE YOU': 'I love you!',
-      'FUCK YOU': 'Fuck you!',
+      'NAMASTE': 'Namaste!',
       'OK': 'Okay!',
       'HELP': 'I need help, please.',
       'PLEASE': 'Please.',

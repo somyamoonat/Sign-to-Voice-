@@ -86,10 +86,10 @@ SignPulse AI is calibrated for zero-noise conversational recognition, focusing e
 | Sign / Phrase | Icon | How to Perform |
 |---|:---:|---|
 | **HELLO / WAVE** | 👋 | Open palm waving side-to-side (oscillating motion). |
-| **THANK YOU** | 🙏 | Flat hand touching chin/mouth moving outward toward the camera. |
+| **THANK YOU** | 🤲 | Flat hand touching chin/mouth moving outward toward the camera. |
 | **I LOVE YOU** | 🤟 | Thumb, Index, and Pinky extended; Middle and Ring curled. |
+| **NAMASTE** | 🙏 | Both palms pressed together pointing upright in front of chest. |
 | **OK** | 👌 | Thumb & Index pinch in a circle; Middle, Ring, Pinky extended upright. |
-| **FUCK YOU** | 🖕 | Middle finger extended upright, other fingers curled into fist. |
 | **GOOD / THUMBS UP** | 👍 | Fist with thumb pointing straight up. |
 | **BAD / THUMBS DOWN** | 👎 | Fist with thumb pointing straight down. |
 | **EXCELLENT** | 👍👍 | Double Thumbs Up with both hands. |

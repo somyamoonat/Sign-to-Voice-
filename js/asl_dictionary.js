@@ -17,7 +17,7 @@ export const ASL_SIGNS = [
     category: 'Conversational',
     badge: 'Dynamic',
     description: 'Flat open hand near chin, moving smoothly forward and slightly downward.',
-    icon: '🙏',
+    icon: '🤲',
     tips: 'Move flat palm forward from chin towards the camera.'
   },
   {
@@ -29,12 +29,12 @@ export const ASL_SIGNS = [
     tips: 'Combine I, L, and Y fingers into one single iconic sign.'
   },
   {
-    name: 'FUCK YOU',
+    name: 'NAMASTE',
     category: 'Conversational',
-    badge: 'Expressive',
-    description: 'Middle finger extended upright with all other fingers curled tightly into a closed fist.',
-    icon: '🖕',
-    tips: 'Hold your fist closed and extend only your middle finger straight up.'
+    badge: 'Two-Hand',
+    description: 'Both palms pressed flat together pointing upward in front of chest in a traditional greeting.',
+    icon: '🙏',
+    tips: 'Press both palms together with fingers pointing straight upward in front of your chest.'
   },
   {
     name: 'YES',

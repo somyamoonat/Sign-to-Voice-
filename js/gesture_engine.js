@@ -2,8 +2,8 @@
  * gesture_engine.js - Real-time ASL (American Sign Language) Conversational Classifier
  * Supports:
  * - Dynamic Conversational Signs: HELLO, THANK YOU, YES, NO, SORRY
- * - Two-Hand Signs: NO (Crossed index fingers), HELP, EXCELLENT, STOP
- * - Single-Hand Conversational Signs: OK, FUCK YOU, I LOVE YOU, GOOD, BAD, PLEASE, WATER, STOP
+ * - Two-Hand Signs: NO (Crossed index fingers), HELP, EXCELLENT, STOP, NAMASTE
+ * - Single-Hand Conversational Signs: OK, I LOVE YOU, GOOD, BAD, PLEASE, WATER, STOP
  * - Practical Controls: SPACE, BACKSPACE
  */
 
@@ -207,6 +207,34 @@ export class GestureEngine {
       }
     }
 
+    // NAMASTE gesture: Both palms pressed flat together pointing upward in front of chest (Prayer / Anjali Mudra)
+    const avgScale = (f1.scale + f2.scale) / 2;
+    const isHand1PointingUp = hand1[12].y < hand1[0].y - avgScale * 0.3;
+    const isHand2PointingUp = hand2[12].y < hand2[0].y - avgScale * 0.3;
+    const isHand1Open = f1.middle.isExtended && (f1.index.isExtended || !f1.index.isCurled) && !f1.middle.isCurled && !f1.ring.isCurled;
+    const isHand2Open = f2.middle.isExtended && (f2.index.isExtended || !f2.index.isCurled) && !f2.middle.isCurled && !f2.ring.isCurled;
+
+    if (isHand1PointingUp && isHand2PointingUp && isHand1Open && isHand2Open) {
+      const distMiddleTips = distance3D(hand1[12], hand2[12]) / avgScale;
+      const distIndexTips = distance3D(hand1[8], hand2[8]) / avgScale;
+      const distPalms = distance3D(hand1[9], hand2[9]) / avgScale;
+      const distWrists = distance3D(hand1[0], hand2[0]) / avgScale;
+      const wristHeightDiff = Math.abs(hand1[0].y - hand2[0].y) / avgScale;
+
+      const vDir1 = getVector(hand1[0], hand1[12]);
+      const vDir2 = getVector(hand2[0], hand2[12]);
+      const angleBetweenHands = angleBetweenVectors(vDir1, vDir2);
+
+      if ((distMiddleTips < 0.75 || distIndexTips < 0.75) && distPalms < 1.05 && distWrists < 1.4 && wristHeightDiff < 0.65 && angleBetweenHands < 55) {
+        return {
+          text: 'NAMASTE',
+          category: 'conversational',
+          confidence: 0.98,
+          description: 'Both palms pressed together upright in prayer gesture (Namaste)'
+        };
+      }
+    }
+
     // HELP gesture: One hand is a flat base palm, other hand is a thumbs-up on top moving up
     const isHand1FlatBase = f1.index.isExtended && f1.middle.isExtended && f1.ring.isExtended && f1.pinky.isExtended;
     const isHand2ThumbUp = f2.thumb.isUp && f2.index.isCurled && f2.middle.isCurled && f2.ring.isCurled && f2.pinky.isCurled;
@@ -337,16 +365,6 @@ export class GestureEngine {
         category: 'conversational',
         confidence: 0.98,
         description: 'Thumb & Index touching in circle with other 3 fingers upright (OK)'
-      };
-    }
-
-    // "MIDDLE FINGER" / "FUCK YOU": Middle finger extended straight up, all other fingers curled into fist
-    if (middle.isExtended && index.isCurled && ring.isCurled && pinky.isCurled && landmarks[12].y < landmarks[10].y) {
-      return {
-        text: 'FUCK YOU',
-        category: 'conversational',
-        confidence: 1.00,
-        description: 'Middle finger extended upright with fist closed (Fuck You)'
       };
     }
 
